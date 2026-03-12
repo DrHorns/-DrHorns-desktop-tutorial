@@ -14,6 +14,9 @@ A simple todo list app built with vanilla HTML, CSS, and JavaScript. Tasks persi
 ## Features
 
 - Add, complete, and delete tasks
+- Double-click a task to edit it inline
+- Clear all completed tasks in one click
+- Smooth slide-in and fade-out animations
 - Tasks persist across browser sessions (localStorage)
 - Dark/light theme toggle (remembered across sessions)
 - Filter tasks: All, Active, or Done
@@ -44,6 +47,8 @@ A simple todo list app built with vanilla HTML, CSS, and JavaScript. Tasks persi
 3. Click the **x** button to delete a task
 4. Use the **All / Active / Done** filter tabs to view specific tasks
 5. Click the moon/sun icon to toggle dark/light theme
+6. Double-click a task's text to **edit** it (Enter to save, Escape to cancel)
+7. Click **Clear done** to remove all completed tasks at once
 
 ## Project Structure
 

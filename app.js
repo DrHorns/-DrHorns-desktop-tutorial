@@ -4,7 +4,8 @@ const list = document.getElementById("todo-list");
 const emptyMsg = document.getElementById("empty-msg");
 const themeToggle = document.getElementById("theme-toggle");
 const taskCount = document.getElementById("task-count");
-const filterBtns = document.querySelectorAll(".filter-btn");
+const clearDoneBtn = document.getElementById("clear-done");
+const filterBtns = document.querySelectorAll(".filter-btn:not(#clear-done)");
 
 let todos = JSON.parse(localStorage.getItem("todos")) || [];
 let currentFilter = "all";
@@ -36,6 +37,13 @@ filterBtns.forEach((btn) => {
   });
 });
 
+// Clear completed
+clearDoneBtn.addEventListener("click", () => {
+  todos = todos.filter((t) => !t.done);
+  render();
+  save();
+});
+
 function getFilteredTodos() {
   if (currentFilter === "active") return todos.filter((t) => !t.done);
   if (currentFilter === "done") return todos.filter((t) => t.done);
@@ -53,6 +61,42 @@ function updateEmptyMsg(filtered) {
 function updateTaskCount() {
   const remaining = todos.filter((t) => !t.done).length;
   taskCount.textContent = remaining === 1 ? "1 task left" : `${remaining} tasks left`;
+
+  const doneCount = todos.filter((t) => t.done).length;
+  clearDoneBtn.style.display = doneCount > 0 ? "" : "none";
+}
+
+function startEdit(span, todo, li) {
+  const editInput = document.createElement("input");
+  editInput.type = "text";
+  editInput.className = "edit-input";
+  editInput.value = todo.text;
+  span.replaceWith(editInput);
+  editInput.focus();
+  editInput.select();
+
+  function finishEdit() {
+    const newText = editInput.value.trim();
+    if (newText) {
+      todo.text = newText;
+      save();
+    }
+    render();
+  }
+
+  editInput.addEventListener("blur", finishEdit);
+  editInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") editInput.blur();
+    if (e.key === "Escape") {
+      editInput.value = todo.text;
+      editInput.blur();
+    }
+  });
+}
+
+function animateRemove(li, callback) {
+  li.classList.add("removing");
+  li.addEventListener("animationend", callback, { once: true });
 }
 
 function renderTodo(todo) {
@@ -71,14 +115,20 @@ function renderTodo(todo) {
 
   const span = document.createElement("span");
   span.textContent = todo.text;
+  span.title = "Double-click to edit";
+  span.addEventListener("dblclick", () => {
+    startEdit(span, todo, li);
+  });
 
   const deleteBtn = document.createElement("button");
   deleteBtn.textContent = "\u00d7";
   deleteBtn.title = "Delete";
   deleteBtn.addEventListener("click", () => {
-    todos.splice(realIndex, 1);
-    render();
-    save();
+    animateRemove(li, () => {
+      todos.splice(realIndex, 1);
+      render();
+      save();
+    });
   });
 
   li.append(checkbox, span, deleteBtn);

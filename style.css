@@ -149,6 +149,16 @@ h1 {
   list-style: none;
 }
 
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; transform: translateX(0); }
+  to { opacity: 0; transform: translateX(30px); }
+}
+
 #todo-list li {
   display: flex;
   align-items: center;
@@ -158,6 +168,11 @@ h1 {
   background: var(--surface);
   border-radius: 8px;
   transition: background 0.3s;
+  animation: slideIn 0.25s ease-out;
+}
+
+#todo-list li.removing {
+  animation: fadeOut 0.25s ease-out forwards;
 }
 
 #todo-list li.done span {
@@ -175,6 +190,29 @@ h1 {
 #todo-list li span {
   flex: 1;
   font-size: 1rem;
+  cursor: pointer;
+  border-bottom: 1px solid transparent;
+  padding-bottom: 1px;
+}
+
+#todo-list li span:hover {
+  border-bottom-color: var(--border);
+}
+
+#todo-list li .edit-input {
+  flex: 1;
+  font-size: 1rem;
+  padding: 0.2rem 0.4rem;
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--text);
+  outline: none;
+}
+
+#clear-done:hover {
+  color: var(--accent) !important;
+  border-color: var(--accent) !important;
 }
 
 #todo-list li button {

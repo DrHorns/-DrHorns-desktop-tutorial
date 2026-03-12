@@ -1,21 +1,29 @@
 # DrHorns Desktop Tutorial
 
-A desktop tutorial project by DrHorns.
+A simple todo list app built with vanilla HTML, CSS, and JavaScript. Tasks persist in your browser using localStorage.
 
 ## Table of Contents
 
+- [Features](#features)
 - [Getting Started](#getting-started)
 - [Usage](#usage)
+- [Project Structure](#project-structure)
 - [Contributing](#contributing)
 - [License](#license)
+
+## Features
+
+- Add, complete, and delete tasks
+- Tasks persist across browser sessions (localStorage)
+- Clean dark-themed UI
+- Fully responsive design
+- No dependencies — pure HTML, CSS, and JS
 
 ## Getting Started
 
 ### Prerequisites
 
-<!-- List any prerequisites here, e.g.: -->
-<!-- - Node.js >= 18 -->
-<!-- - Python >= 3.10 -->
+- A modern web browser (Chrome, Firefox, Safari, Edge)
 
 ### Installation
 
@@ -25,17 +33,20 @@ A desktop tutorial project by DrHorns.
    cd -DrHorns-desktop-tutorial
    ```
 
-2. Install dependencies:
-   ```bash
-   # Add install commands here
-   ```
+2. Open `index.html` in your browser.
 
 ## Usage
 
-<!-- Describe how to use the project here -->
+1. Type a task in the input field and click **Add** (or press Enter)
+2. Click the checkbox to mark a task as done
+3. Click the **x** button to delete a task
 
-```bash
-# Add usage examples here
+## Project Structure
+
+```
+index.html   — App markup
+style.css    — Styles and dark theme
+app.js       — Todo logic and localStorage persistence
 ```
 
 ## Contributing

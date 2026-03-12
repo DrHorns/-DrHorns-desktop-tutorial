@@ -14,6 +14,8 @@ A simple todo list app built with vanilla HTML, CSS, and JavaScript. Tasks persi
 ## Features
 
 - Add, complete, and delete tasks
+- Optional **due dates** with smart labels (today, tomorrow, overdue)
+- **Drag-and-drop** to reorder tasks
 - Double-click a task to edit it inline
 - Clear all completed tasks in one click
 - Smooth slide-in and fade-out animations
@@ -42,13 +44,15 @@ A simple todo list app built with vanilla HTML, CSS, and JavaScript. Tasks persi
 
 ## Usage
 
-1. Type a task in the input field and click **Add** (or press Enter)
+1. Type a task in the input field, optionally pick a **due date**, and click **Add** (or press Enter)
 2. Click the checkbox to mark a task as done
+   - Overdue tasks show in red, tasks due today show in amber
 3. Click the **x** button to delete a task
 4. Use the **All / Active / Done** filter tabs to view specific tasks
 5. Click the moon/sun icon to toggle dark/light theme
 6. Double-click a task's text to **edit** it (Enter to save, Escape to cancel)
 7. Click **Clear done** to remove all completed tasks at once
+8. Drag the **grip handle** on the left of any task to reorder
 
 ## Project Structure
 

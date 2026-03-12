@@ -1,5 +1,6 @@
 const form = document.getElementById("todo-form");
 const input = document.getElementById("todo-input");
+const dateInput = document.getElementById("todo-date");
 const list = document.getElementById("todo-list");
 const emptyMsg = document.getElementById("empty-msg");
 const themeToggle = document.getElementById("theme-toggle");
@@ -9,6 +10,7 @@ const filterBtns = document.querySelectorAll(".filter-btn:not(#clear-done)");
 
 let todos = JSON.parse(localStorage.getItem("todos")) || [];
 let currentFilter = "all";
+let dragIndex = null;
 
 // Theme
 const savedTheme = localStorage.getItem("theme") || "dark";
@@ -66,12 +68,34 @@ function updateTaskCount() {
   clearDoneBtn.style.display = doneCount > 0 ? "" : "none";
 }
 
-function startEdit(span, todo, li) {
+function formatDueDate(dateStr) {
+  const due = new Date(dateStr + "T00:00:00");
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  const diffDays = Math.floor((due - today) / (1000 * 60 * 60 * 24));
+
+  let label;
+  if (diffDays < 0) label = `Overdue by ${Math.abs(diffDays)}d`;
+  else if (diffDays === 0) label = "Due today";
+  else if (diffDays === 1) label = "Due tomorrow";
+  else label = `Due ${due.toLocaleDateString(undefined, { month: "short", day: "numeric" })}`;
+
+  let className = "due-date";
+  if (diffDays < 0) className += " overdue";
+  else if (diffDays === 0) className += " due-today";
+
+  return { label, className };
+}
+
+function startEdit(contentEl, todo) {
   const editInput = document.createElement("input");
   editInput.type = "text";
   editInput.className = "edit-input";
   editInput.value = todo.text;
-  span.replaceWith(editInput);
+  contentEl.replaceWith(editInput);
   editInput.focus();
   editInput.select();
 
@@ -102,7 +126,47 @@ function animateRemove(li, callback) {
 function renderTodo(todo) {
   const realIndex = todos.indexOf(todo);
   const li = document.createElement("li");
+  li.dataset.index = realIndex;
   if (todo.done) li.classList.add("done");
+
+  // Drag handle
+  const handle = document.createElement("span");
+  handle.className = "drag-handle";
+  handle.textContent = "\u2261";
+  handle.title = "Drag to reorder";
+
+  // Make draggable
+  li.draggable = true;
+  li.addEventListener("dragstart", (e) => {
+    dragIndex = realIndex;
+    li.classList.add("dragging");
+    e.dataTransfer.effectAllowed = "move";
+  });
+  li.addEventListener("dragend", () => {
+    li.classList.remove("dragging");
+    dragIndex = null;
+    list.querySelectorAll("li").forEach((el) => el.classList.remove("drag-over"));
+  });
+  li.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    list.querySelectorAll("li").forEach((el) => el.classList.remove("drag-over"));
+    li.classList.add("drag-over");
+  });
+  li.addEventListener("dragleave", () => {
+    li.classList.remove("drag-over");
+  });
+  li.addEventListener("drop", (e) => {
+    e.preventDefault();
+    li.classList.remove("drag-over");
+    const dropIndex = parseInt(li.dataset.index);
+    if (dragIndex !== null && dragIndex !== dropIndex) {
+      const [moved] = todos.splice(dragIndex, 1);
+      todos.splice(dropIndex, 0, moved);
+      save();
+      render();
+    }
+  });
 
   const checkbox = document.createElement("input");
   checkbox.type = "checkbox";
@@ -113,11 +177,25 @@ function renderTodo(todo) {
     save();
   });
 
-  const span = document.createElement("span");
-  span.textContent = todo.text;
-  span.title = "Double-click to edit";
-  span.addEventListener("dblclick", () => {
-    startEdit(span, todo, li);
+  const contentEl = document.createElement("div");
+  contentEl.className = "todo-content";
+  contentEl.title = "Double-click to edit";
+
+  const textSpan = document.createElement("span");
+  textSpan.className = "todo-text";
+  textSpan.textContent = todo.text;
+  contentEl.appendChild(textSpan);
+
+  if (todo.dueDate) {
+    const { label, className } = formatDueDate(todo.dueDate);
+    const dueBadge = document.createElement("span");
+    dueBadge.className = className;
+    dueBadge.textContent = label;
+    contentEl.appendChild(dueBadge);
+  }
+
+  contentEl.addEventListener("dblclick", () => {
+    startEdit(contentEl, todo);
   });
 
   const deleteBtn = document.createElement("button");
@@ -131,7 +209,7 @@ function renderTodo(todo) {
     });
   });
 
-  li.append(checkbox, span, deleteBtn);
+  li.append(handle, checkbox, contentEl, deleteBtn);
   return li;
 }
 
@@ -147,8 +225,10 @@ form.addEventListener("submit", (e) => {
   e.preventDefault();
   const text = input.value.trim();
   if (!text) return;
-  todos.push({ text, done: false });
+  const dueDate = dateInput.value || null;
+  todos.push({ text, done: false, dueDate });
   input.value = "";
+  dateInput.value = "";
   render();
   save();
 });

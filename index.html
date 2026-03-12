@@ -13,8 +13,11 @@
       <button id="theme-toggle" title="Toggle theme">&#9790;</button>
     </div>
     <form id="todo-form">
-      <input type="text" id="todo-input" placeholder="What needs to be done?" autocomplete="off" required>
-      <button type="submit">Add</button>
+      <div class="form-row">
+        <input type="text" id="todo-input" placeholder="What needs to be done?" autocomplete="off" required>
+        <input type="date" id="todo-date" title="Due date (optional)">
+        <button type="submit">Add</button>
+      </div>
     </form>
     <div class="filters">
       <button class="filter-btn active" data-filter="all">All</button>

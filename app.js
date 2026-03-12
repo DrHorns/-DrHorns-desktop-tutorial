@@ -2,18 +2,61 @@ const form = document.getElementById("todo-form");
 const input = document.getElementById("todo-input");
 const list = document.getElementById("todo-list");
 const emptyMsg = document.getElementById("empty-msg");
+const themeToggle = document.getElementById("theme-toggle");
+const taskCount = document.getElementById("task-count");
+const filterBtns = document.querySelectorAll(".filter-btn");
 
 let todos = JSON.parse(localStorage.getItem("todos")) || [];
+let currentFilter = "all";
+
+// Theme
+const savedTheme = localStorage.getItem("theme") || "dark";
+if (savedTheme === "light") document.body.classList.add("light");
+updateThemeIcon();
+
+themeToggle.addEventListener("click", () => {
+  document.body.classList.toggle("light");
+  const theme = document.body.classList.contains("light") ? "light" : "dark";
+  localStorage.setItem("theme", theme);
+  updateThemeIcon();
+});
+
+function updateThemeIcon() {
+  const isLight = document.body.classList.contains("light");
+  themeToggle.innerHTML = isLight ? "&#9728;" : "&#9790;";
+}
+
+// Filters
+filterBtns.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    filterBtns.forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+    currentFilter = btn.dataset.filter;
+    render();
+  });
+});
+
+function getFilteredTodos() {
+  if (currentFilter === "active") return todos.filter((t) => !t.done);
+  if (currentFilter === "done") return todos.filter((t) => t.done);
+  return todos;
+}
 
 function save() {
   localStorage.setItem("todos", JSON.stringify(todos));
 }
 
-function updateEmptyMsg() {
-  emptyMsg.classList.toggle("hidden", todos.length > 0);
+function updateEmptyMsg(filtered) {
+  emptyMsg.classList.toggle("hidden", filtered.length > 0);
 }
 
-function renderTodo(todo, index) {
+function updateTaskCount() {
+  const remaining = todos.filter((t) => !t.done).length;
+  taskCount.textContent = remaining === 1 ? "1 task left" : `${remaining} tasks left`;
+}
+
+function renderTodo(todo) {
+  const realIndex = todos.indexOf(todo);
   const li = document.createElement("li");
   if (todo.done) li.classList.add("done");
 
@@ -21,8 +64,8 @@ function renderTodo(todo, index) {
   checkbox.type = "checkbox";
   checkbox.checked = todo.done;
   checkbox.addEventListener("change", () => {
-    todos[index].done = checkbox.checked;
-    li.classList.toggle("done", checkbox.checked);
+    todos[realIndex].done = checkbox.checked;
+    render();
     save();
   });
 
@@ -33,7 +76,7 @@ function renderTodo(todo, index) {
   deleteBtn.textContent = "\u00d7";
   deleteBtn.title = "Delete";
   deleteBtn.addEventListener("click", () => {
-    todos.splice(index, 1);
+    todos.splice(realIndex, 1);
     render();
     save();
   });
@@ -44,8 +87,10 @@ function renderTodo(todo, index) {
 
 function render() {
   list.innerHTML = "";
-  todos.forEach((todo, i) => list.appendChild(renderTodo(todo, i)));
-  updateEmptyMsg();
+  const filtered = getFilteredTodos();
+  filtered.forEach((todo) => list.appendChild(renderTodo(todo)));
+  updateEmptyMsg(filtered);
+  updateTaskCount();
 }
 
 form.addEventListener("submit", (e) => {

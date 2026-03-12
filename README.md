@@ -15,7 +15,9 @@ A simple todo list app built with vanilla HTML, CSS, and JavaScript. Tasks persi
 
 - Add, complete, and delete tasks
 - Tasks persist across browser sessions (localStorage)
-- Clean dark-themed UI
+- Dark/light theme toggle (remembered across sessions)
+- Filter tasks: All, Active, or Done
+- Live task counter
 - Fully responsive design
 - No dependencies — pure HTML, CSS, and JS
 
@@ -40,12 +42,14 @@ A simple todo list app built with vanilla HTML, CSS, and JavaScript. Tasks persi
 1. Type a task in the input field and click **Add** (or press Enter)
 2. Click the checkbox to mark a task as done
 3. Click the **x** button to delete a task
+4. Use the **All / Active / Done** filter tabs to view specific tasks
+5. Click the moon/sun icon to toggle dark/light theme
 
 ## Project Structure
 
 ```
 index.html   — App markup
-style.css    — Styles and dark theme
+style.css    — Styles, CSS variables, and theme support
 app.js       — Todo logic and localStorage persistence
 ```
 

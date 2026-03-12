@@ -8,11 +8,20 @@
 </head>
 <body>
   <div class="container">
-    <h1>DrHorns Todo</h1>
+    <div class="header">
+      <h1>DrHorns Todo</h1>
+      <button id="theme-toggle" title="Toggle theme">&#9790;</button>
+    </div>
     <form id="todo-form">
       <input type="text" id="todo-input" placeholder="What needs to be done?" autocomplete="off" required>
       <button type="submit">Add</button>
     </form>
+    <div class="filters">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="active">Active</button>
+      <button class="filter-btn" data-filter="done">Done</button>
+      <span id="task-count"></span>
+    </div>
     <ul id="todo-list"></ul>
     <p id="empty-msg">No tasks yet. Add one above!</p>
   </div>
